@@ -1,3 +1,10 @@
-vendor/
+# Backend
+backend/vendor/
+backend/.env
+
+# IDE
 .idea/
-.env
+
+# OS
+.DS_Store
+Thumbs.db
