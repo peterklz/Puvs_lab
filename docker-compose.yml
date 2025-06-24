@@ -4,7 +4,7 @@ services:
   web:
     build: ./backend
     ports:
-      - "3000:80"
+      - "8080:80"
     environment:
       - DB_HOST=postgres
       - DB_NAME=shopping_db
@@ -12,8 +12,7 @@ services:
       - DB_PASS=shopping_pass
       - DB_PORT=5432
     depends_on:
-      postgres:
-        condition: service_healthy
+      - postgres
     volumes:
       - ./backend:/var/www/html
 
@@ -22,11 +21,7 @@ services:
     ports:
       - "5000:5000"
     environment:
-      - API_URL=http://web:80
-      - BACKEND_URL=http://web:80
-      - SHOPPING_API_URL=http://web:80
-      - API_BASE_URL=http://web:80
-      - FLASK_ENV=development
+      - API_SERVER_URL=http://web:80
     depends_on:
       - web
     restart: unless-stopped
@@ -42,11 +37,6 @@ services:
     volumes:
       - ./backend/init.sql:/docker-entrypoint-initdb.d/init.sql
       - postgres_data:/var/lib/postgresql/data
-    healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U shopping_user -d shopping_db"]
-      interval: 5s
-      timeout: 5s
-      retries: 5
 
 volumes:
   postgres_data:

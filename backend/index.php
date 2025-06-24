@@ -5,10 +5,9 @@ use Psr\Http\Message\ResponseInterface as Response;
 use Psr\Http\Message\ServerRequestInterface as Request;
 use Slim\Factory\AppFactory;
 
-// Simple logging to STDOUT (12-Factor Principle 11)
 function logMessage(string $level, string $message): void
 {
-    echo "[" . date('Y-m-d H:i:s') . "] $level: $message" . PHP_EOL;
+    error_log("[" . date('Y-m-d H:i:s') . "] $level: $message");
 }
 
 // Create Slim app
@@ -23,18 +22,14 @@ $app->add(function (Request $request, $handler) {
         ->withHeader('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, PATCH, OPTIONS');
 });
 
-// Add routing middleware (ESSENTIAL for Slim 4!)
 $app->addRoutingMiddleware();
 
-// Add error middleware
 $app->addErrorMiddleware(true, true, true);
 
-// Handle preflight OPTIONS requests
 $app->options('/{routes:.+}', function (Request $request, Response $response) {
     return $response;
 });
 
-// Database connection
 function getDbConnection(): PDO
 {
     $host = $_ENV['DB_HOST'] ?? 'postgres';
@@ -58,7 +53,6 @@ function getDbConnection(): PDO
     }
 }
 
-// Database operations
 class ItemStore
 {
     private static ?PDO $db = null;
@@ -124,7 +118,6 @@ class ItemStore
     }
 }
 
-// Helper functions
 function validateItemInput(array $data): array
 {
     $errors = [];
@@ -153,7 +146,6 @@ function errorResponse(Response $response, string $message, int $statusCode = 40
     return jsonResponse($response, ['error' => $message], $statusCode);
 }
 
-// Routes
 
 // GET /items - Get all shopping items
 $app->get('/items', function (Request $request, Response $response) {
@@ -185,15 +177,12 @@ $app->post('/items', function (Request $request, Response $response) {
         $name = trim($data['name']);
         $quantity = (int)$data['quantity'];
 
-        // Check if item with same name already exists (case-insensitive)
         $existingItem = ItemStore::findByName($name);
 
         if ($existingItem) {
-            // Update existing item quantity
             $updatedItem = ItemStore::increaseQuantity($existingItem['id'], $quantity);
             return jsonResponse($response, $updatedItem, 200);
         } else {
-            // Create new item
             $newItem = ItemStore::create($name, $quantity);
             return jsonResponse($response, $newItem, 201);
         }
