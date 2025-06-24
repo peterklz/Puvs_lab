@@ -4,7 +4,7 @@ services:
   web:
     build: ./backend
     ports:
-      - "8000:80"
+      - "3000:80"
     environment:
       - DB_HOST=postgres
       - DB_NAME=shopping_db
@@ -16,6 +16,20 @@ services:
         condition: service_healthy
     volumes:
       - ./backend:/var/www/html
+
+  frontend:
+    image: maeddes/hse25frontend:flask
+    ports:
+      - "5000:5000"
+    environment:
+      - API_URL=http://web:80
+      - BACKEND_URL=http://web:80
+      - SHOPPING_API_URL=http://web:80
+      - API_BASE_URL=http://web:80
+      - FLASK_ENV=development
+    depends_on:
+      - web
+    restart: unless-stopped
 
   postgres:
     image: postgres:15
