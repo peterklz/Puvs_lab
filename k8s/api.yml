@@ -13,34 +13,34 @@ spec:
         app: shopping-api
     spec:
       containers:
-      - name: shopping-api
-        image: shopping-api:latest
-        imagePullPolicy: Never
-        ports:
-        - containerPort: 80
-        env:
-        - name: DB_HOST
-          value: "postgres-service"
-        - name: DB_NAME
-          value: "shopping_db"
-        - name: DB_USER
-          value: "shopping_user"
-        - name: DB_PASS
-          value: "shopping_pass"
-        - name: DB_PORT
-          value: "5432"
-        readinessProbe:
-          httpGet:
-            path: /items
-            port: 80
-          initialDelaySeconds: 10
-          periodSeconds: 10
-        livenessProbe:
-          httpGet:
-            path: /items
-            port: 80
-          initialDelaySeconds: 30
-          periodSeconds: 30
+        - name: shopping-api
+          image: shopping-api:latest
+          imagePullPolicy: Never
+          ports:
+            - containerPort: 80
+          env:
+            - name: DB_HOST
+              value: "postgres-service"
+            - name: DB_NAME
+              value: "shopping_db"
+            - name: DB_USER
+              value: "shopping_user"
+            - name: DB_PASS
+              value: "shopping_pass"
+            - name: DB_PORT
+              value: "5432"
+          readinessProbe:
+            httpGet:
+              path: /items
+              port: 80
+            initialDelaySeconds: 10
+            periodSeconds: 10
+          livenessProbe:
+            httpGet:
+              path: /items
+              port: 80
+            initialDelaySeconds: 30
+            periodSeconds: 30
 
 ---
 apiVersion: v1

@@ -2,7 +2,7 @@ version: '3.8'
 
 services:
   web:
-    build: .
+    build: ./backend
     ports:
       - "8000:80"
     environment:
@@ -15,7 +15,7 @@ services:
       postgres:
         condition: service_healthy
     volumes:
-      - .:/var/www/html
+      - ./backend:/var/www/html
 
   postgres:
     image: postgres:15
@@ -26,7 +26,7 @@ services:
     ports:
       - "5432:5432"
     volumes:
-      - ./init.sql:/docker-entrypoint-initdb.d/init.sql
+      - ./backend/init.sql:/docker-entrypoint-initdb.d/init.sql
       - postgres_data:/var/lib/postgresql/data
     healthcheck:
       test: ["CMD-SHELL", "pg_isready -U shopping_user -d shopping_db"]
