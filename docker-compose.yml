@@ -1,0 +1,42 @@
+version: '3.8'
+
+services:
+  web:
+    build: ./backend
+    ports:
+      - "8080:80"
+    environment:
+      - DB_HOST=postgres
+      - DB_NAME=shopping_db
+      - DB_USER=shopping_user
+      - DB_PASS=shopping_pass
+      - DB_PORT=5432
+    depends_on:
+      - postgres
+    volumes:
+      - ./backend:/var/www/html
+
+  frontend:
+    image: maeddes/hse25frontend:flask
+    ports:
+      - "5000:5000"
+    environment:
+      - API_SERVER_URL=http://web:80
+    depends_on:
+      - web
+    restart: unless-stopped
+
+  postgres:
+    image: postgres:15
+    environment:
+      POSTGRES_DB: shopping_db
+      POSTGRES_USER: shopping_user
+      POSTGRES_PASSWORD: shopping_pass
+    ports:
+      - "5432:5432"
+    volumes:
+      - ./backend/init.sql:/docker-entrypoint-initdb.d/init.sql
+      - postgres_data:/var/lib/postgresql/data
+
+volumes:
+  postgres_data:
